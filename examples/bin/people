@@ -1,0 +1,11 @@
+#/bin/bash
+
+result=$(sqlite3 examples/data.db -json "SELECT * FROM people WHERE id=$1;" | jq -r ".[0]")
+
+if [ "$result" = "null" ] || [ -z "$result" ]; then
+  echo "@status: 404"
+  echo "{\"error\": \"Person with id $1 not found\"}"
+  exit 0
+fi
+
+echo "$result"
