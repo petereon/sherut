@@ -1,6 +1,6 @@
 # Sherut
 
-The tool you didn't know you wanted. A breath of slow air in the world of ever faster API frameworks.
+The tool you didn't know you wanted. A slow breath of fresh air in the world of ever faster API frameworks.
 
 Sherut (שירות - Hebrew for "service") is a lightweight tool that exposes shell commands as HTTP endpoints. It automatically detects your shell, passes request data to your scripts, and even auto-detects content types.
 
