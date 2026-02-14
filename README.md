@@ -4,6 +4,9 @@ The tool you didn't know you wanted. A slow breath of fresh air in the world of 
 
 Sherut (שירות - Hebrew for "service") is a lightweight tool that exposes shell commands as HTTP endpoints. It automatically detects your shell, passes request data to your scripts, and even auto-detects content types.
 
+> [!WARNING]
+> Please keep in mind `sherut` is untested and meant as an elaborate joke more than anything else. Production use is very much discouraged.
+
 ## Installation
 
 ```bash
