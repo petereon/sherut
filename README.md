@@ -217,6 +217,57 @@ sherut --route "/admin/stats" '
 | fish | ❌ Use JSON format | Use `--header-format json --query-format json` |
 | sh | ❌ Use JSON format | Use `--header-format json --query-format json` |
 
+
+## Benchmark Result
+```
+========================================
+  Sherut vs FastAPI Benchmark
+========================================
+Cleaning up...
+
+=== Benchmarking FastAPI ===
+
+FastAPI server ready on http://localhost:8080
+
+Benchmark 1: curl -s http://localhost:8080/people/1
+  Time (mean ± σ):       9.9 ms ±   0.6 ms    [User: 3.1 ms, System: 3.9 ms]
+  Range (min … max):     8.7 ms …  12.3 ms    100 runs
+ 
+
+FastAPI benchmark complete
+Cleaning up...
+
+=== Benchmarking Sherut ===
+
+Building sherut...
+2026-02-15T10:12:57.099832Z  INFO sherut: Using shell: zsh
+2026-02-15T10:12:57.099872Z  INFO sherut: Header format: Assoc
+2026-02-15T10:12:57.099873Z  INFO sherut: Query format: Assoc
+2026-02-15T10:12:57.100304Z  INFO sherut::routes: Registered route: GET /people/:id -> `./benchmarks/people.sh :id`
+2026-02-15T10:12:57.100399Z  INFO sherut: 🚀 Server running on http://0.0.0.0:8080
+Sherut server ready on http://localhost:8080
+
+Benchmark 1: curl -s http://localhost:8080/people/1
+  Time (mean ± σ):      27.6 ms ±   1.9 ms    [User: 3.1 ms, System: 3.8 ms]
+  Range (min … max):    25.4 ms …  42.8 ms    100 runs
+ 
+  Warning: Statistical outliers were detected. Consider re-running this benchmark on a quiet system without any interferences from other programs. It might help to use the '--warmup' or '--prepare' options.
+ 
+
+Sherut benchmark complete
+Cleaning up...
+
+=== Comparison ===
+
+FastAPI: 9.93ms (mean)
+Sherut:  27.60ms (mean)
+
+FastAPI is 2.78x faster than Sherut
+
+Benchmark complete!
+Cleaning up...
+```
+
 ## License
 
 MIT
