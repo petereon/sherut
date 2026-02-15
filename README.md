@@ -18,19 +18,36 @@ The binary will be at `target/release/sherut`.
 ## Quick Start
 
 ```bash
-# Simple echo endpoint
+# Simple echo endpoint (matches any HTTP method)
 sherut --route "/hello/:name" 'echo "Hello, :name!"'
 
-# JSON API using a script
-sherut --route "/api/users/:id" './scripts/get_user.sh :id'
+# Specify HTTP methods
+sherut --route "GET /api/users/:id" './scripts/get_user.sh :id'
 
-# Multiple routes
+# Multiple routes with different methods
 sherut \
-  --route "/users" 'sqlite3 data.db -json "SELECT * FROM users"' \
-  --route "/users/:id" 'sqlite3 data.db -json "SELECT * FROM users WHERE id=:id" | jq ".[0]"'
+  --route "GET /users" 'sqlite3 data.db -json "SELECT * FROM users"' \
+  --route "GET /users/:id" 'sqlite3 data.db -json "SELECT * FROM users WHERE id=:id" | jq ".[0]"' \
+  --route "POST /users" './scripts/create_user.sh'
 ```
 
 ## Features
+
+### HTTP Methods
+
+Specify the HTTP method before the path. Supported methods: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `HEAD`, `OPTIONS`, or `ANY` (default):
+
+```bash
+# Only handles GET requests
+sherut --route "GET /users" 'sqlite3 data.db -json "SELECT * FROM users"'
+
+# Only handles POST requests  
+sherut --route "POST /users" 'echo "@status: 201"; echo "{\"created\": true}"'
+
+# Handles any HTTP method (default when method not specified)
+sherut --route "/health" 'echo "OK"'
+sherut --route "ANY /health" 'echo "OK"'  # equivalent
+```
 
 ### Route Parameters
 
@@ -64,6 +81,29 @@ sherut --route "/auth" 'echo "Token: ${HEADERS[authorization]}"'
 
 # JSON format
 sherut --header-format json --route "/auth" 'echo $HEADERS_JSON | jq -r .authorization'
+```
+
+### Request Body
+
+The request body is passed to your command via **stdin**, following Unix conventions:
+
+```bash
+# Echo the raw body back
+sherut --route "POST /echo" 'cat'
+
+# Parse JSON body with jq
+sherut --route "POST /users" 'jq -r .name | xargs -I{} echo "Hello, {}!"'
+
+# Process and store
+sherut --route "POST /data" 'cat > /tmp/received.json && echo "Saved!"'
+
+# Validate JSON and extract fields
+sherut --route "POST /api/items" '
+  name=$(jq -r .name)
+  price=$(jq -r .price)
+  sqlite3 data.db "INSERT INTO items (name, price) VALUES (\"$name\", $price)"
+  echo "{\"created\": true}"
+'
 ```
 
 ### Response Control
@@ -103,7 +143,7 @@ You can override this with `@header: Content-Type: ...`.
 | `--shell` | auto | Shell to use: `bash`, `zsh`, `fish`, `sh` (auto-detected from `$SHELL`) |
 | `--header-format` | auto | How to pass headers: `assoc` (associative array) or `json` |
 | `--query-format` | auto | How to pass query params: `assoc` or `json` |
-| `--route PATH CMD` | - | Define a route (can be repeated) |
+| `--route PATH CMD` | - | Define a route. PATH can include HTTP method (e.g., "GET /users") |
 
 ## Examples
 
